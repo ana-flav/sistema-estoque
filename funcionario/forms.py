@@ -2,30 +2,41 @@ from django import forms
 from django.db import models
 from django.forms import ModelForm
 from .models import Funcionario
+from validate_docbr import CPF
 import re 
 
+
+cpf_validator = CPF()
+
 class FuncionarioForm(ModelForm):
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Senha novamente'}))
     
     class Meta:
         model = Funcionario
         fields = '__all__'
-        
+
+    def __init__(self, *args, **kwargs):
+        super(FuncionarioForm, self).__init__(*args, **kwargs)
+        self.fields['user'].label = 'Usuário'
+
 
     def clean(self):
         cleaned_data = super().clean()  
-        password = self.cleaned_data.get('password')
-        password2 = self.cleaned_data.get('password2')
+        cpf = self.cleaned_data.get('cpf')
+        email = self.cleaned_data.get('email')
     
-        if re.search('[^/w]', password) is None:
-            self.add_error('password', 'A senha deve ter pelo menos um caractere especial') 
+        if cpf is not None and cpf!='':
+            if not cpf_validator.validate(cpf):
+                self.add_error('cpf', 'CPF inválido')
+            
+            if Funcionario.objects.filter(cpf=cpf).exists():
+                self.add_error('cpf', 'CPF já cadastrado')
+        
+        if Funcionario.objects.filter(email=email).exists():
+            self.add_error('email', 'E-mail já cadastrado')
 
-        if len(password) < 8:
-            self.add_error('password', 'A senha deve ter no mínimo 8 caracteres')
-
-        if password and password2 and password != password2:
-            self.add_error('password2', 'As senhas não são iguais')
-
+        return cleaned_data
+        
+        
 
         
 
