@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %} Cadastro do Funcionário {% endblock title %}
+
+{% block content %}
+<div class="container">
+    <h1>Formulário de Cadastro do Funcionário</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Cadastrar</button>
+    </form>
+</div>
+{% endblock content %}
