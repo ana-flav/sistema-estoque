@@ -8,7 +8,7 @@ from django.db import transaction, atomic
 
 @receiver(post_save, sender=Funcionario)
 def create_user_funcionario(sender, instance, created, **kwargs):
-    if created:
+    if created or not instance.user:
         try:
             with transaction.atomic():
                 if User.objects.filter(username=instance.user.email).exists():
@@ -16,6 +16,7 @@ def create_user_funcionario(sender, instance, created, **kwargs):
                     user.set_password(instance.user.password)
                     user.save()
                 else:
-                    print(":sos_button: Usuário já existe")
+                    instance.user = User.objects.get(username=instance.user.email)
+                    
         except Exception as e:
             print(":danger: Erro ao criar usuário: ", e)

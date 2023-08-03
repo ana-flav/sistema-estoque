@@ -1,14 +1,18 @@
 {% extends 'base.html' %}
+{% load django_bootstrap5 %}
 
-{% block title %} Cadastro do Funcionário {% endblock title %}
+{% block title %}Cadastro de Funcionário{% endblock title %}
 
 {% block content %}
-<div class="container">
-    <h1>Formulário de Cadastro do Funcionário</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Cadastrar</button>
-    </form>
-</div>
-{% endblock content %}
+    <div class="container">
+        <div class="row my-5">
+            <div class="col-md-12">
+                <form method="post" class="form">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
